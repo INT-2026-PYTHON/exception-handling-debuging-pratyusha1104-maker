@@ -137,3 +137,86 @@ Explanation:
 =================================================
 
 """
+def process_records(records):
+    clean_records = []
+    error_log = []
+    index=0  
+    for  record in records:
+        try:
+            name = record["name"]
+            age_str = record["age"]
+            score_str = record["score"]
+        
+            age = int(age_str)
+            score = float(score_str)
+            
+        except (KeyError, TypeError) as e:
+            class_name = type(e).__name__
+            message = str(e)
+            error_log.append((index, class_name, message))
+            
+        except ValueError as e:
+            class_name = type(e).__name__
+            message = str(e)
+            error_log.append((index, class_name, message))
+            
+        else:
+            cleaned_record = {
+                "name": name,
+                "age": age,
+                "score": score
+            }
+            clean_records.append(cleaned_record)
+            
+    return clean_records, error_log
+
+
+def process_strict(records):
+    clean_records, error_log = process_records(records)
+    
+    if error_log:
+        num_failures = len(error_log)
+        raise RuntimeError(f"{num_failures} record(s) failed to process") from None
+        
+    return clean_records, error_log
+
+records = []
+print("--- User Record Processing Setup ---")
+try:
+    num_records = int(input("How many records do you want to input? "))
+except ValueError:
+    print("Invalid number. Defaulting to 3 records.")
+    num_records = 3
+
+for i in range(num_records):
+    print(f"\n--- Constructing Record #{i} ---")
+    record_type = input("Enter 'd' for a normal dictionary record, or 's' to pass a raw string (to test TypeError): ").strip().lower()
+        
+    if record_type == 's':
+      raw_string = input("Enter the raw string text: ")
+      records.append(raw_string)
+    else:
+      print("Leave a field blank to test missing key (KeyError)")
+      name = input("Enter Name: ").strip()
+      age = input("Enter Age (e.g., 25 or 'abc' to test ValueError): ").strip()
+      score = input("Enter Score (e.g., 88.5): ").strip()      
+      record_dict = {}
+      if name: 
+        record_dict["name"] = name
+      if age: 
+         record_dict["age"] = age
+      if score: 
+         record_dict["score"] = score
+                
+      records.append(record_dict)
+            
+clean, errors = process_records(records)
+print("\n[Output] Clean Records:")
+print(clean)
+print("\n[Output] Error Log:")
+print(errors)
+print("-" * 40)
+try:
+    process_strict(records)
+except RuntimeError as e:
+    print(f"[Output] Strict mode raised: RuntimeError: {e}")

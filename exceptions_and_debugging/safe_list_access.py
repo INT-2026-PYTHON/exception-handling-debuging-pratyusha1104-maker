@@ -77,3 +77,31 @@ Output Example 3:
 =================================================
 
 """
+def safe_get(items, index):
+    try:
+        result = items[index]
+        return ("ok", result)
+        
+    except IndexError:
+        return ("error", "Index out of range")
+        
+    except TypeError:
+        return ("error", "Index must be an int")
+        
+    except Exception as e:
+        return ("error", f"Unexpected error: {str(e)}")
+
+list1= input("Enter list elements separated by commas: ").split(",")
+for i in range(len(list1)):
+    if list1[i].isdigit():
+       list1[i] = int(list1[i])
+print(f"Current list parsed as: {list1}")
+raw_index = input("Enter an index to look up (or a string like 'one' to trigger TypeError): ")
+if raw_index.isdigit():
+   final_index = int(raw_index)
+else:
+  final_index = raw_index  
+        
+print("\nExecuting safe_get...")
+output = safe_get(list1, final_index)
+print(f"Output Tuple: {output}")
