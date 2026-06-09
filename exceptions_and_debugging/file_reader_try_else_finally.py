@@ -124,3 +124,39 @@ Explanation:
 =================================================
 
 """
+import os
+print("Current folder : ",os.getcwd())
+def read_numbers(path):
+    total = 0
+    lines_read = 0
+    try:
+        with open(path, "r") as f:
+            for line in f:
+                try:
+                    num = float(line.strip())
+                    total += num
+                    lines_read += 1
+                except ValueError:
+                    raise ValueError("Invalid number on a line")
+
+    except FileNotFoundError:
+        return ("error", f"File not found: {path}", 0)
+
+    except PermissionError:
+        return ("error", f"Permission denied: {path}", 0)
+
+    except ValueError as e:
+        return ("error", str(e), lines_read)
+
+    except Exception as e:
+        return ("error", str(e), lines_read)
+
+    else:
+        return ("ok", total, lines_read)
+
+    finally:
+        print("Done reading")
+
+file_name=input("Enter file name : ")
+result=read_numbers("exceptions_and_debugging\\"+file_name)
+print(result)
